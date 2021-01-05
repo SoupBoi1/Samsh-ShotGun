@@ -10,8 +10,9 @@ public class Player_Camera : MonoBehaviour
     public float xSen = 180f;
     public float ySen = 100f;
     public Transform orgn;
-
-    
+    public Transform offest;
+    public float mincamlp = -89;
+    public float maxcamlp = 90;
     float x;
     float y;
     float xRotation;
@@ -41,7 +42,9 @@ public class Player_Camera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CemaraCollison();
         Look(LookD);
+        //transform.position =  offest.position;
     }
 
     void OnLook(InputAction.CallbackContext context)
@@ -54,12 +57,28 @@ public class Player_Camera : MonoBehaviour
         x = L.x * xSen * Time.deltaTime;
         y = L.y * ySen * Time.deltaTime;
 
-        
+        y = Mathf.Clamp(y, mincamlp, maxcamlp);
+
         xRotation -= y;
-        Mathf.Clamp(xRotation, 0, 90);
+
+        xRotation = Mathf.Clamp(xRotation, mincamlp, maxcamlp);
+
         transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         //transform.Rotate(Vector3.right * y);
         orgn.Rotate(Vector3.up * x);
     }
 
+    void CemaraCollison()
+    {
+        RaycastHit hit;
+        if (Physics.Linecast(orgn.position,transform.position,out hit))
+        {
+            
+            transform.position = hit.point;
+        }
+        else
+        {
+            transform.position = offest.position;
+        }
+    }
 }

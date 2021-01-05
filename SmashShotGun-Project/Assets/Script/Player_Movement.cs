@@ -12,13 +12,16 @@ public class Player_Movement : MonoBehaviour
     public Transform CameraT;
     public float speed = 12f;
     public bool Jumpable;
+    public float MinJumpHieght = 2f;
     public float JumpHieght = 5f;
     public int JumpAmount = 2;
+    public float JumpBhold;
     public Vector3 vilocity;
     public bool isGrounded;
-    public float isGroundedRadius=.3f;
+    public float isGroundedRadius = .3f;
 
-    public Vector3 gravity; 
+    public Vector3 gravity;
+    Vector3 moveDir;
 
     float v_move;
     float h_move;
@@ -30,6 +33,9 @@ public class Player_Movement : MonoBehaviour
     InputAction moveAction;
     InputAction jumpAction;
 
+    private bool fall;
+    Vector3 FJumpPosition;
+    Vector3 LJumpPosition;
     // Start is called before the first frame update
 
 
@@ -105,26 +111,44 @@ public class Player_Movement : MonoBehaviour
         if (context.performed)
         {
             Jumpable = true;
-           
+            FJumpPosition = transform.position;
         }
         else if (context.canceled)
         {
             Jumpable = false;
-            
+            fall = true;
+            LJumpPosition = transform.position;
         }
     }
 
     void Jump()
     {
+        //bool fall;
         if (Jumpable)
         {
+            JumpBhold -= Time.deltaTime;
 
             if (isGrounded == true)
-                {
+            {
                 vilocity.y += Mathf.Sqrt(JumpHieght * -2 * gravity.y);
-                print(3);
-                }
-         
+               
+            }
+
+        }
+
+        else if (Jumpable == false)
+        {
+            LJumpPosition = transform.position;
+            float DealtY = Mathf.Abs( LJumpPosition.y- FJumpPosition.y );
+            
+            if (DealtY <= MinJumpHieght && fall == true)
+            {
+                print("EEEE" + DealtY);
+                vilocity.y = 0;
+                fall = false;
+
+            }
+
         }
     }
 }
